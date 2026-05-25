@@ -1,0 +1,16 @@
+# Compiled binary
+game
+
+# Object files
+*.o
+*.out
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
