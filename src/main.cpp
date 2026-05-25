@@ -19,6 +19,9 @@ int main(void){
     while (!WindowShouldClose()){
         if(IsKeyDown(KEY_W)) cubePositon.z -= 0.1f;
         if(IsKeyDown(KEY_S)) cubePositon.z += 0.1f;
+        if(IsKeyDown(KEY_A)) cubePositon.x -= 0.1f;
+        if(IsKeyDown(KEY_D)) cubePositon.x += 0.1f;
+
 
         camera.target = cubePositon;
         camera.position = (Vector3){cubePositon.x, cubePositon.y + 5.0f, cubePositon.z + 10.0f};
