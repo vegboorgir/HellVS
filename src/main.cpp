@@ -6,7 +6,9 @@ int main(void){
     int screenHeight = 450;
     InitWindow(screenWidhth,screenHeight,"title");
 
-    Vector3 cubePositon = {0.0f, 0.0f, 0.0f};
+    Vector3 cubePositon = {0.0f, 1.0f, 0.0f};
+
+    Vector3 PlatformPos = {0.0f, 0.0f, 0.0f};
 
     Camera3D camera = { 0 };
     camera.up= (Vector3){0.0f,10.0f,0.0f};
@@ -29,8 +31,9 @@ int main(void){
         BeginDrawing();
         ClearBackground(BLACK);
         BeginMode3D(camera);
+        DrawCylinder(PlatformPos, 10.0f,10.0f,0.0f,24,GRAY);
+        DrawCylinderWires(PlatformPos, 10.0f,10.0f,0.0f,24, WHITE);
         DrawCube(cubePositon, 1.0f,1.0f,1.0f, RED);
-        DrawGrid(10, 1.0f);
         EndMode3D();
         EndDrawing();
     }
