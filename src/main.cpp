@@ -4,7 +4,7 @@ int main(void){
     
     int screenWidth = 800;
     int screenHeight = 450;
-    SetConfigFlags(FLAG_FULLSCREEN_MODE);
+    SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_MSAA_4X_HINT);
     int monitor = GetCurrentMonitor();
     InitWindow(GetMonitorWidth(monitor),GetMonitorHeight(monitor),"title");
 
@@ -48,12 +48,13 @@ int main(void){
             velocityY = jumpForce;
 
         velocityY += gravity;
+        float diff = camera.target.y - camera.position.y;
         camera.position.y += velocityY;
-        camera.target.y += velocityY;
+        camera.target.y = camera.position.y + diff;
 
         if(camera.position.y < groundY){
+            camera.target.y += (groundY - camera.position.y);
             camera.position.y = groundY;
-            camera.target.y = groundY;
             velocityY = 0.0f;
         }
         BeginDrawing();
@@ -64,8 +65,8 @@ int main(void){
             (Color){80, 0, 0, 255});
 
             BeginMode3D(camera);
-                DrawCylinder(PlatformPos, 30.0f,30.0f,0.0f,24,GRAY);
-                DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.0f,24, WHITE);
+                DrawCylinder(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){40,10,5,255});
+                DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){200,50,0,255});
                 DrawGrid(50,1.0f);
             EndMode3D();
         EndDrawing();
