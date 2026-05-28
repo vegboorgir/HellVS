@@ -19,13 +19,28 @@ int main(void){
     SetTargetFPS(60);
 
     while (!WindowShouldClose()){
-        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+        float speed = IsKeyDown(KEY_LEFT_SHIFT) ? 0.3f : 0.1f;
+
+        Vector3 movement = {0};
+        if(IsKeyDown(KEY_W)) movement.x = speed;
+        if(IsKeyDown(KEY_S)) movement.x = -speed;
+        if(IsKeyDown(KEY_A)) movement.y = -speed;
+        if(IsKeyDown(KEY_D)) movement.y = speed;
+
+        Vector3 rotation = {
+            GetMouseDelta().x * 0.05f,
+            GetMouseDelta().y * 0.05f,
+            0.0f
+        };
+
+        UpdateCameraPro(&camera, movement, rotation,0.0f);
 
         BeginDrawing();
             ClearBackground(BLACK);
             BeginMode3D(camera);
-                DrawCylinder(PlatformPos, 10.0f,10.0f,0.0f,24,GRAY);
-                DrawCylinderWires(PlatformPos, 10.0f,10.0f,0.0f,24, WHITE);
+                DrawCylinder(PlatformPos, 30.0f,30.0f,0.0f,24,GRAY);
+                DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.0f,24, WHITE);
+                DrawGrid(50,1.0f);
             EndMode3D();
         EndDrawing();
     }
