@@ -6,35 +6,27 @@ int main(void){
     int screenHeight = 450;
     InitWindow(screenWidhth,screenHeight,"title");
 
-    Vector3 cubePositon = {0.0f, 1.0f, 0.0f};
-
     Vector3 PlatformPos = {0.0f, 0.0f, 0.0f};
 
     Camera3D camera = { 0 };
-    camera.up= (Vector3){0.0f,10.0f,0.0f};
-    camera.fovy = 45.0f;
+    camera.position = (Vector3){0.0f,2.0f,5.0f};
+    camera.target = (Vector3){0.0f,2.0f,0.0f};
+    camera.up= (Vector3){0.0f,1.0f,0.0f};
+    camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
-
+    DisableCursor();
     SetTargetFPS(60);
 
     while (!WindowShouldClose()){
-        if(IsKeyDown(KEY_W)) cubePositon.z -= 0.1f;
-        if(IsKeyDown(KEY_S)) cubePositon.z += 0.1f;
-        if(IsKeyDown(KEY_A)) cubePositon.x -= 0.1f;
-        if(IsKeyDown(KEY_D)) cubePositon.x += 0.1f;
-
-
-        camera.target = cubePositon;
-        camera.position = (Vector3){cubePositon.x, cubePositon.y + 5.0f, cubePositon.z + 10.0f};
+        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
 
         BeginDrawing();
-        ClearBackground(BLACK);
-        BeginMode3D(camera);
-        DrawCylinder(PlatformPos, 10.0f,10.0f,0.0f,24,GRAY);
-        DrawCylinderWires(PlatformPos, 10.0f,10.0f,0.0f,24, WHITE);
-        DrawCube(cubePositon, 1.0f,1.0f,1.0f, RED);
-        EndMode3D();
+            ClearBackground(BLACK);
+            BeginMode3D(camera);
+                DrawCylinder(PlatformPos, 10.0f,10.0f,0.0f,24,GRAY);
+                DrawCylinderWires(PlatformPos, 10.0f,10.0f,0.0f,24, WHITE);
+            EndMode3D();
         EndDrawing();
     }
 
