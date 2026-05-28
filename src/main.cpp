@@ -2,18 +2,26 @@
 
 int main(void){
     
-    int screenWidhth = 800;
+    int screenWidth = 800;
     int screenHeight = 450;
-    InitWindow(screenWidhth,screenHeight,"title");
+    SetConfigFlags(FLAG_FULLSCREEN_MODE);
+    int monitor = GetCurrentMonitor();
+    InitWindow(GetMonitorWidth(monitor),GetMonitorHeight(monitor),"title");
 
     Vector3 PlatformPos = {0.0f, 0.0f, 0.0f};
 
     Camera3D camera = { 0 };
-    camera.position = (Vector3){0.0f,2.0f,5.0f};
-    camera.target = (Vector3){0.0f,2.0f,0.0f};
+    camera.position = (Vector3){0.0f,1.0f,5.0f};
+    camera.target = (Vector3){0.0f,1.0f,0.0f};
     camera.up= (Vector3){0.0f,1.0f,0.0f};
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
+
+
+    float velocityY = 0.0f;
+    float gravity = -0.01f;
+    float jumpForce = 0.2f;
+    float groundY = 1.0f;
 
     DisableCursor();
     SetTargetFPS(60);
@@ -26,17 +34,35 @@ int main(void){
         if(IsKeyDown(KEY_S)) movement.x = -speed;
         if(IsKeyDown(KEY_A)) movement.y = -speed;
         if(IsKeyDown(KEY_D)) movement.y = speed;
+        if(IsKeyPressed(KEY_F11)) ToggleFullscreen(); 
 
         Vector3 rotation = {
-            GetMouseDelta().x * 0.05f,
-            GetMouseDelta().y * 0.05f,
+            GetMouseDelta().x * 0.07f,
+            GetMouseDelta().y * 0.07f,
             0.0f
         };
 
         UpdateCameraPro(&camera, movement, rotation,0.0f);
 
+        if(IsKeyPressed(KEY_SPACE) && camera.position.y <= groundY)
+            velocityY = jumpForce;
+
+        velocityY += gravity;
+        camera.position.y += velocityY;
+        camera.target.y += velocityY;
+
+        if(camera.position.y < groundY){
+            camera.position.y = groundY;
+            camera.target.y = groundY;
+            velocityY = 0.0f;
+        }
         BeginDrawing();
-            ClearBackground(BLACK);
+
+        ClearBackground(BLACK);
+        DrawRectangleGradientV(0, 0, GetScreenWidth(), GetScreenHeight(),
+            (Color){5, 0, 10, 255},
+            (Color){80, 0, 0, 255});
+
             BeginMode3D(camera);
                 DrawCylinder(PlatformPos, 30.0f,30.0f,0.0f,24,GRAY);
                 DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.0f,24, WHITE);
