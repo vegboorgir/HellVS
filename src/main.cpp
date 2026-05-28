@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include <cmath>
+#include <math.h>
 
 int main(void){
     
@@ -11,8 +13,8 @@ int main(void){
     Vector3 PlatformPos = {0.0f, 0.0f, 0.0f};
 
     Camera3D camera = { 0 };
-    camera.position = (Vector3){0.0f,1.0f,5.0f};
-    camera.target = (Vector3){0.0f,1.0f,0.0f};
+    camera.position = (Vector3){0.0f,3.0f,5.0f};
+    camera.target = (Vector3){0.0f,3.0f,0.0f};
     camera.up= (Vector3){0.0f,1.0f,0.0f};
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
@@ -20,14 +22,14 @@ int main(void){
 
     float velocityY = 0.0f;
     float gravity = -0.01f;
-    float jumpForce = 0.2f;
-    float groundY = 1.0f;
+    float jumpForce = 0.25f;
+    float groundY = 3.0f;
 
     DisableCursor();
     SetTargetFPS(60);
 
     while (!WindowShouldClose()){
-        float speed = IsKeyDown(KEY_LEFT_SHIFT) ? 0.3f : 0.1f;
+        float speed = IsKeyDown(KEY_LEFT_SHIFT) ? 0.2f : 0.1f;
 
         Vector3 movement = {0};
         if(IsKeyDown(KEY_W)) movement.x = speed;
@@ -57,6 +59,19 @@ int main(void){
             camera.position.y = groundY;
             velocityY = 0.0f;
         }
+
+        float platformRadius = 29.0f;
+        float dx = camera.position.x - PlatformPos.x;
+        float dz = camera.position.z - PlatformPos.z;
+        float dist = sqrtf(dx*dx + dz*dz);
+
+        if(dist>platformRadius){
+            camera.position.x = PlatformPos.x + (dx/dist) * platformRadius;
+            camera.position.z = PlatformPos.z + (dz/dist) * platformRadius;
+            camera.target.x = camera.position.x + (camera.target.x - camera.position.x);
+            camera.target.z = camera.position.z + (camera.target.z - camera.position.z);
+        }
+
         BeginDrawing();
 
         ClearBackground(BLACK);
