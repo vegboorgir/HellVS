@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include "raymath.h" 
+#include "rlgl.h"
 #include <cmath>
 #include <math.h>
 
@@ -82,7 +84,8 @@ int main(void){
             BeginMode3D(camera);
                 DrawCylinder(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){40,10,5,255});
                 DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){200,50,0,255});
-                DrawGrid(50,1.0f);
+
+                DrawCapsule({0,4,0},{0,2,0},1,8,8,BLUE);
             EndMode3D();
         EndDrawing();
     }
