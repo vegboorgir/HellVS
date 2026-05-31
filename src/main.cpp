@@ -2,17 +2,17 @@
 #include "raymath.h" 
 #include "rlgl.h"
 #include <cmath>
+#include <ctime>
 #include <math.h>
 
 int main(void){
     
-    int screenWidth = 800;
-    int screenHeight = 450;
     SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_MSAA_4X_HINT);
     int monitor = GetCurrentMonitor();
     InitWindow(GetMonitorWidth(monitor),GetMonitorHeight(monitor),"title");
 
     Vector3 PlatformPos = {0.0f, 0.0f, 0.0f};
+    Vector3 EnemyPos = {1.0f, 3.0f, 8.0f};
 
     Camera3D camera = { 0 };
     camera.position = (Vector3){0.0f,3.0f,5.0f};
@@ -26,6 +26,8 @@ int main(void){
     float gravity = -0.01f;
     float jumpForce = 0.25f;
     float groundY = 3.0f;
+    float enemySpeed = 3.0f;
+    float duelRange = 4.0f;
 
     DisableCursor();
     SetTargetFPS(60);
@@ -74,6 +76,17 @@ int main(void){
             camera.target.z = camera.position.z + (camera.target.z - camera.position.z);
         }
 
+        Vector3 dir = Vector3Subtract(camera.position, EnemyPos);
+        float distToPlayer = Vector3Length(dir);
+        Vector3 dirNorm = Vector3Normalize(dir);
+
+        if(distToPlayer > duelRange){
+            EnemyPos = Vector3Add(EnemyPos, Vector3Scale(dirNorm, enemySpeed * GetFrameTime()));
+        }
+        else if (distToPlayer < duelRange - 1.0f) {
+            EnemyPos = Vector3Subtract(EnemyPos, Vector3Scale(dirNorm, enemySpeed * GetFrameTime()));
+        }
+
         BeginDrawing();
 
         ClearBackground(BLACK);
@@ -84,8 +97,7 @@ int main(void){
             BeginMode3D(camera);
                 DrawCylinder(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){40,10,5,255});
                 DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){200,50,0,255});
-
-                DrawCapsule({0,4,0},{0,2,0},1,8,8,BLUE);
+                DrawCapsule({EnemyPos.x, EnemyPos.y + 1.0f, EnemyPos.z}, {EnemyPos.x, EnemyPos.y - 1.0f, EnemyPos.z}, 0.5f, 8, 8, RED);
             EndMode3D();
         EndDrawing();
     }
