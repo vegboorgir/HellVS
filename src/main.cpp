@@ -12,11 +12,11 @@ int main(void){
     InitWindow(GetMonitorWidth(monitor),GetMonitorHeight(monitor),"title");
 
     Vector3 PlatformPos = {0.0f, 0.0f, 0.0f};
-    Vector3 EnemyPos = {1.0f, 3.0f, 8.0f};
+    Vector3 EnemyPos = {1.0f, 3.0f, 25.0f};
 
     Camera3D camera = { 0 };
-    camera.position = (Vector3){0.0f,3.0f,5.0f};
-    camera.target = (Vector3){0.0f,3.0f,0.0f};
+    camera.position = (Vector3){0.0f,3.0f,-25.0f};
+    camera.target = (Vector3){0.0f,3.0f,25.0f};
     camera.up= (Vector3){0.0f,1.0f,0.0f};
     camera.fovy = 60.0f;
     camera.projection = CAMERA_PERSPECTIVE;
@@ -29,6 +29,13 @@ int main(void){
     float enemySpeed = 3.0f;
     float duelRange = 4.0f;
 
+    float attackTimer = 3.0f;
+    float coolDown = 3.0f;
+    bool isAttacking = false;
+
+    Vector3 attackStartPos = {0};
+    Vector3 attackTargetPos = {0};
+    float attackT = 0.0f;
     DisableCursor();
     SetTargetFPS(60);
 
@@ -75,16 +82,35 @@ int main(void){
             camera.target.x = camera.position.x + (camera.target.x - camera.position.x);
             camera.target.z = camera.position.z + (camera.target.z - camera.position.z);
         }
+        if(!isAttacking){
+            Vector3 dir = Vector3Subtract(camera.position, EnemyPos);
+            float distToPlayer = Vector3Length(dir);
+            Vector3 dirNorm = Vector3Normalize(dir);
 
-        Vector3 dir = Vector3Subtract(camera.position, EnemyPos);
-        float distToPlayer = Vector3Length(dir);
-        Vector3 dirNorm = Vector3Normalize(dir);
+            if(distToPlayer > duelRange){
+                EnemyPos = Vector3Add(EnemyPos, Vector3Scale(dirNorm, enemySpeed * GetFrameTime()));
+            }else if (distToPlayer < duelRange - 1.0f) {
+                EnemyPos = Vector3Subtract(EnemyPos, Vector3Scale(dirNorm, enemySpeed * GetFrameTime()));
+            }
 
-        if(distToPlayer > duelRange){
-            EnemyPos = Vector3Add(EnemyPos, Vector3Scale(dirNorm, enemySpeed * GetFrameTime()));
-        }
-        else if (distToPlayer < duelRange - 1.0f) {
-            EnemyPos = Vector3Subtract(EnemyPos, Vector3Scale(dirNorm, enemySpeed * GetFrameTime()));
+            attackTimer -= GetFrameTime();
+            if(attackTimer <= 0.0f){
+                isAttacking = true;
+                attackStartPos = EnemyPos;
+                attackTargetPos = camera.position;
+                attackT = 0.0f;
+            }
+        }else{
+            attackT += GetFrameTime() * 4.0f;
+            if(attackT > 1.0f) attackT  = 1.0f;
+
+            EnemyPos = Vector3Lerp(attackStartPos,attackTargetPos,attackT);
+
+            if(attackT >= 1.0f){
+                isAttacking = false;
+                attackTimer = coolDown;
+                attackT = 0.0f;
+            }
         }
 
         BeginDrawing();
