@@ -36,6 +36,10 @@ int main(void){
     Vector3 attackStartPos = {0};
     Vector3 attackTargetPos = {0};
     float attackT = 0.0f;
+
+    float playerHP = 100.0f;
+    float damage = 10.0f;
+    bool hitRegistered = false;
     DisableCursor();
     SetTargetFPS(60);
 
@@ -106,10 +110,17 @@ int main(void){
 
             EnemyPos = Vector3Lerp(attackStartPos,attackTargetPos,attackT);
 
+            float lungeDist = Vector3Distance(EnemyPos, camera.position);
+            if(lungeDist < 2.0f && !hitRegistered){
+                playerHP -= damage;
+                hitRegistered = true;
+            }
+
             if(attackT >= 1.0f){
                 isAttacking = false;
                 attackTimer = coolDown;
                 attackT = 0.0f;
+                hitRegistered = false;
             }
         }
 
@@ -125,6 +136,9 @@ int main(void){
                 DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){200,50,0,255});
                 DrawCapsule({EnemyPos.x, EnemyPos.y + 1.0f, EnemyPos.z}, {EnemyPos.x, EnemyPos.y - 1.0f, EnemyPos.z}, 0.5f, 8, 8, RED);
             EndMode3D();
+
+            DrawText(TextFormat("HP: %.0f", playerHP), 20,20,30, GREEN);
+
         EndDrawing();
     }
 
