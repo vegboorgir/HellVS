@@ -28,6 +28,7 @@ int main(void){
     float groundY = 3.0f;
     float enemySpeed = 3.0f;
     float duelRange = 4.0f;
+    float enemyVelocityY = 0.0f;
 
     float attackTimer = 3.0f;
     float coolDown = 3.0f;
@@ -86,6 +87,14 @@ int main(void){
             camera.target.x = camera.position.x + (camera.target.x - camera.position.x);
             camera.target.z = camera.position.z + (camera.target.z - camera.position.z);
         }
+
+        enemyVelocityY += gravity;
+        EnemyPos.y += enemyVelocityY;
+
+        if(EnemyPos.y <= groundY){
+            EnemyPos.y = groundY;
+            enemyVelocityY = 0.0f;
+        }
         if(!isAttacking){
             Vector3 dir = Vector3Subtract(camera.position, EnemyPos);
             float distToPlayer = Vector3Length(dir);
@@ -135,6 +144,20 @@ int main(void){
                 DrawCylinder(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){40,10,5,255});
                 DrawCylinderWires(PlatformPos, 30.0f,30.0f,0.5f,24,(Color){200,50,0,255});
                 DrawCapsule({EnemyPos.x, EnemyPos.y + 1.0f, EnemyPos.z}, {EnemyPos.x, EnemyPos.y - 1.0f, EnemyPos.z}, 0.5f, 8, 8, RED);
+
+                Vector3 toPlayer = Vector3Normalize(Vector3Subtract(camera.position, EnemyPos));
+                Vector3 enemyRight = Vector3CrossProduct(toPlayer, (Vector3){0,1,0});
+
+                Vector3 spearOrigin = Vector3Add(EnemyPos, Vector3Scale(toPlayer,-1.5f));
+                spearOrigin = Vector3Add(spearOrigin, Vector3Scale(enemyRight, 0.6f));
+                spearOrigin.y += 0.5f;
+
+                spearOrigin.y += 0.5f;
+                Vector3 spearStart = Vector3Add(spearOrigin, Vector3Scale(toPlayer, 0.5f));
+                Vector3 spearEnd = Vector3Add(spearOrigin, Vector3Scale(toPlayer, 4.0f));
+
+                DrawCylinderEx(spearStart, spearEnd, 0.08f, 0.04f, 8, GRAY);
+                DrawCylinderEx(spearEnd, Vector3Add(spearEnd, Vector3Scale(toPlayer, 0.5f)), 0.04f,0.0f, 8, GRAY);
             EndMode3D();
 
             rlDrawRenderBatchActive();
