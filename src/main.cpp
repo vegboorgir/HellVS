@@ -137,6 +137,27 @@ int main(void){
                 DrawCapsule({EnemyPos.x, EnemyPos.y + 1.0f, EnemyPos.z}, {EnemyPos.x, EnemyPos.y - 1.0f, EnemyPos.z}, 0.5f, 8, 8, RED);
             EndMode3D();
 
+            rlDrawRenderBatchActive();
+            rlDisableDepthTest();
+
+            BeginMode3D(camera);
+                Vector3 forward = Vector3Normalize(Vector3Subtract(camera.target, camera.position));
+                Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, camera.up));
+                Vector3 up =  Vector3CrossProduct(right, forward);
+
+                Vector3 handPos = Vector3Add(camera.position, Vector3Scale(forward, 0.3f));
+                handPos = Vector3Add(handPos, Vector3Scale(right, 0.2f));
+                handPos = Vector3Add(handPos, Vector3Scale(up, -0.15f));
+
+                Vector3 handBack = Vector3Add(handPos, Vector3Scale(forward, -0.15f));
+                Vector3 handFront = Vector3Add(handPos, Vector3Scale(forward, 0.15));
+
+                DrawCylinderEx(handBack, handFront, 0.05f, 0.05f, 8, BROWN);
+            EndMode3D();
+
+            rlDrawRenderBatchActive();
+            rlEnableDepthTest();
+
             DrawText(TextFormat("HP: %.0f", playerHP), 20,20,30, GREEN);
 
         EndDrawing();
